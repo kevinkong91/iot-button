@@ -25,7 +25,7 @@ const https = require("https");
 const iftttMakerKey = process.env.IFTTT_MAKER_KEY;
 
 exports.handler = (event, context, callback) => {
-  // Make sure you created a receipe for event <serialNumber>-<clickType>
+  // Make sure you created a receipe for event IotButtonPress-<clickType>
   // on the IFTTT Webhooks channel from the dashboard.
   const webhookEvent = `IotButtonPress-${event.clickType}`;
   const url = `https://maker.ifttt.com/trigger/${webhookEvent}/with/key/${iftttMakerKey}`;
@@ -35,7 +35,9 @@ exports.handler = (event, context, callback) => {
       console.log(`STATUS: ${res.statusCode}`);
       res.on("data", chunk => (body += chunk));
       res.on("end", () => {
-        console.log("Event has been sent to IFTTT Maker channel");
+        console.log(
+          `Event ${event.clickType} has been sent to IFTTT Maker channel`
+        );
         callback(null, body);
       });
     })
