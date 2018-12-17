@@ -22,15 +22,22 @@
 "use strict";
 
 const https = require("https");
+const { stringify } = require("querystring");
+
 const iftttMakerKey = process.env.IFTTT_MAKER_KEY;
 
 exports.handler = (event, context, callback) => {
   // Make sure you created a receipe for event IotButtonPress-<clickType>
   // on the IFTTT Webhooks channel from the dashboard.
   const webhookEvent = `IotButtonPress-${event.clickType}`;
-  const url = `https://maker.ifttt.com/trigger/${webhookEvent}/with/key/${iftttMakerKey}`;
+  let url = `https://maker.ifttt.com/trigger/${webhookEvent}/with/key/${iftttMakerKey}`;
+  const processAction = event.clickType === "SINGLE" ? "START" : "STOP";
+  const parameters = {
+    value1: processAction
+  };
+  url += `?${stringify(parameters)}`;
   https
-    .get(url, res => {
+    .post(url, res => {
       let body = "";
       console.log(`STATUS: ${res.statusCode}`);
       res.on("data", chunk => (body += chunk));
